@@ -106,11 +106,11 @@ class CNNClassifier:
             layers.append(newLayer)
         # Detector Layer
         detectorLayer = Layer(self.n_layer_konvolusi + 1)
-        detectorLayer.setActivFunc(3)
+        detectorLayer.setActivFunc(int(numbers[6]))
         layers.append(detectorLayer)
         # Pooling Layer
         poolingLayer = Layer(self.n_layer_konvolusi + 2)
-        poolingLayer.setActivFunc(3)
+        poolingLayer.setActivFunc(int(numbers[7]))
         layers.append(poolingLayer)
         # Set Layer to CNN
         self.layers = layers
@@ -156,46 +156,6 @@ class CNNClassifier:
         # Activation function: softmax
         elif (f == 4):
             return self.softmax(arr)
-
-    def summary(self):
-        print("SUMMARY")
-        params = 0
-        for i in range(len(self.layers) - 1):
-            if(i == len(self.layers) - 2):
-                param = len(self.layers[i].neurons)
-            else:
-                param = (len(self.layers[i].neurons)) * (len(self.layers[i+1].neurons) - 1)
-            print("==================================")
-            print("Layer (Type)    : dense_" + str(i) +" (Dense)")
-            print("Param           : " +str(param))
-            print("Activation func : " +str(self.layers[i].activfunc))
-            print("Output          : (None,"+ str(len(self.layers[i+1].neurons))+")")
-            print("Weight          :")
-            self.layers[i].printLayer()
-            params += param
-        print("==================================")
-        print("Total params   : " +str(params))
-
-    def printLayer(self, index):
-        n = self.layers[index].getNeurons()
-        l = ""
-        if index == 0:
-            l = "input"
-        elif index == self.n_layer - 1:
-            l = "output"
-        else:
-            l = "hidden-" + str(index)
-        print("Layer-" + l)
-        print("- Func:", self.layers[index].getActivFunc())
-        for i in range (len(n)):
-            print("- Neuron-" + str(i))
-            print("  > Value:", n[i].getHValue())
-            print("  > Weight:", n[i].getWeights())
-        print()
-    
-    def printAllLayers(self):
-        for i in range (len(self.layers)):
-            self.printLayer(i)
 
 CNN = CNNClassifier()
 
