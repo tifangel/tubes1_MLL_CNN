@@ -89,6 +89,8 @@ class CNNClassifier:
             kernels.append(kernel)
         self.kernels = kernels
         print('Kernels : ', self.kernels)
+        for kernel in kernels:
+            print(kernel)
 
         # Pilih Dataset untuk input
         X, y = loadlocal_mnist(
