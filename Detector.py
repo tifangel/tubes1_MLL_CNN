@@ -1,25 +1,22 @@
-import math
 import numpy as np
 
-# Input berupa matriks setelah convolution 
-# Output berupa matriks yang telah diaktivasi
 class Detector:
     def __init__(self):
         self.input = [] 
-        self.activation_type = 'sigmoid'
+        self.activation_type = ''
 
-    def activate(self, rearrange_output, activation_type='sigmoid'):
-        self.input = rearrange_output
+    def activate(self, input_matrix, activation_type='sigmoid'):
+        self.input = input_matrix
         result = []
-        for rearrange in rearrange_output:
+        for x in self.input:
             if activation_type == 'sigmoid':
-                result.append(list(self.sigmoid(rearrange)))
+                result.append(list(self.sigmoid(x)))
             elif activation_type == 'relu':
-                result.append(list(self.relu(rearrange)))
+                result.append(list(self.relu(x)))
             elif activation_type == 'softmax':
-                result.append(list(self.softmax(rearrange)))
+                result.append(list(self.softmax(x)))
             else:
-                result.append(list(rearrange))
+                result.append(list(x))
         return result
     
     def sigmoid(self, X):

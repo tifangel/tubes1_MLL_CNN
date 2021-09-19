@@ -4,6 +4,9 @@ import re
 import math
 import csv
 import sys
+import numpy as np
+from Pooling import Pooling
+from Detector import Detector
 
 class Layer:
     def __init__(self, idlayer):
@@ -191,3 +194,17 @@ class CNNClassifier:
 CNN = CNNClassifier()
 
 CNN.load("text.txt")
+
+matrix = np.array([
+    [1, 1, 2, 4],
+    [5, 6, 7, 8],
+    [3, 2, 1, 0],
+    [1, 2, -3, 4]
+])
+print("input", matrix)
+detector = Detector()
+output_detector = detector.activate(input_matrix=matrix, activation_type='')
+print("output detector:", output_detector)
+pooling = Pooling()
+output_pooling = pooling.apply(input_matrix=output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
+print("output_pooling:", output_pooling)
