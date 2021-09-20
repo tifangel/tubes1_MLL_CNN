@@ -1,21 +1,44 @@
 import numpy as np
+from Layer import Layer
 
-class Convolution:
-    def __init__(self, input, kernels, size_padding, size_stride, isSharing):
-        self.input = input
+class Convolution(Layer):
+    def __init__(self, idlayer, kernels, size_padding, size_stride, isSharing):
+        # self.input = input
         self.kernels = kernels
         self.size_padding = size_padding
         self.size_stride = size_stride
         self.isSharing = isSharing
-        self.d_input = len(input)
-        self.w_input = len(input[0])
-        self.h_input = len(input[0][0])
+        # self.d_input = len(input)
+        # self.w_input = len(input[0])
+        # self.h_input = len(input[0][0])
+        self.d_input = 0
+        self.w_input = 0
+        self.h_input = 0
         self.n_filter = len(kernels)
         self.f_filter = len(kernels[0])
         if (isSharing == 0):
             self.f_filter = len(kernels[0][0])  
-        self.feature_map = []
+        # self.output = []
         self.bias = [0 for i in range(self.n_filter)]
+
+        # invoking the __init__ of the parent class 
+        Layer.__init__(self, idlayer)
+
+    def setInput(self, input):
+        self.input = input
+        self.d_input = len(input)
+        self.w_input = len(input[0])
+        self.h_input = len(input[0][0])
+
+    def printKernels(self):
+        if (self.isSharing == 0):
+            for i, kernel in enumerate(self.kernels):
+                print("Kernel ", i)
+                for j, elmt in enumerate(kernel):
+                    print(elmt)
+        else:
+            for i, kernel in enumerate(self.kernels):
+                print(kernel)
 
     def doConvolution(self):
         # Add padding to input
@@ -34,7 +57,7 @@ class Convolution:
         # Initialize feature map
         vw = (self.w_input - self.f_filter + 2 * self.size_padding) // self.size_stride + 1
         vh = (self.h_input - self.f_filter + 2 * self.size_padding) // self.size_stride + 1
-        self.feature_map = [[[0 for i in range(vh)] for j in range(vw)] for m in range(self.n_filter)]
+        self.output = [[[0 for i in range(vh)] for j in range(vw)] for m in range(self.n_filter)]
 
         # self.print3D(self.input)
         # print ("new:", new_w, new_h, vw, vh)
@@ -57,8 +80,8 @@ class Convolution:
                             for q in range(self.f_filter):
                                 # print(i,j,p,q)
                                 s += input_matrix[i+p][j+q] * filter_matrix[p][q]
-                        self.feature_map[m][i//self.size_stride][j//self.size_stride] += s
-        return self.feature_map
+                        self.output[m][i//self.size_stride][j//self.size_stride] += s
+        return self.output
 
     # def print3D(self, m):
     #     for i in range (len(m)):
@@ -77,7 +100,7 @@ class Convolution:
     #     print("w_input", self.w_input)
     #     print("n_filter", self.n_filter)
     #     print("f_filter", self.f_filter)
-    #     print("feature_map", self.feature_map)
+    #     print("feature_map", self.output)
 
 # input = [
 #     [

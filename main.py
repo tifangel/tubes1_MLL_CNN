@@ -5,36 +5,10 @@ import math
 import csv
 import sys
 import numpy as np
+from Layer import Layer
 from Convolution import Convolution
 from Pooling import Pooling
 from Detector import Detector
-
-class Layer:
-    def __init__(self, idlayer):
-        self.id_layer = idlayer
-        self.activfunc = -1
-        self.inputs = []
-        self.kernels = []
-
-    def setActivFunc(self, activfunc):
-        self.activfunc = activfunc
-    
-    def setKernels(self, kernels):
-        self.kernels = kernels
-    
-    def setInput(self, inputs):
-        self.inputs = inputs
-
-    def printKernels(self, isSharing):
-        print("Kernel Layer ", self.id_layer)
-        if (isSharing == 0):
-            for i, kernel in enumerate(self.kernels):
-                print("Kernel ", i)
-                for j, elmt in enumerate(kernel):
-                    print(elmt)
-        else:
-            for i, kernel in enumerate(self.kernels):
-                print(kernel)
 
 class CNNClassifier:
     def __init__(self):
@@ -141,66 +115,44 @@ class CNNClassifier:
         layers = []
         # Konvolusi Layer
         for i in range(self.n_layer_konvolusi):
-            newLayer = Layer(i)
-            newLayer.setKernels(self.kernels[i])
-            newLayer.printKernels(self.isSharing)
+            newLayer = Convolution(i, self.kernels[i], self.size_padding, self.size_stride, self.isSharing)
+            newLayer.printKernels()
             layers.append(newLayer)
         # Detector Layer
-        detectorLayer = Layer(self.n_layer_konvolusi + 1)
-        detectorLayer.setActivFunc(int(numbers[7]))
+        detectorLayer = Detector(self.n_layer_konvolusi, int(numbers[7]))
         layers.append(detectorLayer)
         # Pooling Layer
-        poolingLayer = Layer(self.n_layer_konvolusi + 2)
-        poolingLayer.setActivFunc(int(numbers[8]))
+        poolingLayer = Pooling(self.n_layer_konvolusi + 1, self.size_stride, self.size_padding, 'max')
         layers.append(poolingLayer)
         # Set Layer to CNN
         self.layers = layers
 
-    def sigmoid(self, arr):
-        res = []
-        for x in arr:
-            x = round((1/(1 + math.exp(0-x))),3)
-            
-            res.append(x)
-        return res
-
-    def relu(self, arr):
-        res = []
-        for x in arr:
-            if (x >= 0) :
-                res.append(max(0, x))
-            else :
-                res.append(x * 0.0001)
-        return res
-    
-    def softmax(self, arr):
-        
-        e = []
-        p = []
-        for i in arr:
-            e.append(math.exp(i))
-        c = sum(e)
-        for j in e:
-            p.append(j / c)
-        return p
-    
-    def doActivFunc(self, f, arr):
-        # Activation function: linear
-        if (f == 1):
-            return arr
-        # Activation function: sigmoid
-        elif (f == 2):
-            return self.sigmoid(arr)
-        # Activation function: reLU
-        elif (f == 3):
-            return self.relu(arr)
-        # Activation function: softmax
-        elif (f == 4):
-            return self.softmax(arr)
+    def feedFoward(self):
+        # inputLayer = self.input
+        inputLayer = [
+            [1, 1, 2, 4],
+            [5, 6, 7, 8],
+            [3, 2, 1, 0],
+            [1, 2, -3, 4]
+        ]
+        # Convolution
+        for i in range(self.n_layer_konvolusi):
+            self.layers[i].setInput([inputLayer])
+            inputLayer = self.layers[i].doConvolution()[0]
+            print("output convolution:", inputLayer)
+        # Detector
+        self.layers[self.n_layer_konvolusi].setInput(inputLayer)
+        inputLayer = self.layers[self.n_layer_konvolusi].activate()
+        print("output detector:", inputLayer)
+        # Pooling
+        outputLayer = self.layers[self.n_layer_konvolusi + 1].apply(inputLayer)
+        print("output_pooling:", outputLayer)
 
 CNN = CNNClassifier()
 
 CNN.load("text.txt")
+
+CNN.feedFoward()
 
 # matrix = np.array([
 #     [1, 1, 2, 4],
@@ -217,12 +169,14 @@ CNN.load("text.txt")
 
 # print("input", matrix)
 # print("kernel", kernel)
-convolution = Convolution([CNN.getInput()], CNN.getKernels(), 0, 100, 1)
-output_convolution = convolution.doConvolution()[0]
-print("output convolution:", output_convolution)
-detector = Detector()
-output_detector = detector.activate(input_matrix=output_convolution, activation_type='')
-print("output detector:", output_detector)
-pooling = Pooling()
-output_pooling = pooling.apply(input_matrix=output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
-print("output_pooling:", output_pooling)
+
+
+# convolution = Convolution([CNN.getInput()], CNN.getKernels(), 0, 100, 1)
+# output_convolution = convolution.doConvolution()[0]
+# print("output convolution:", output_convolution)
+# detector = Detector()
+# output_detector = detector.activate(input_matrix=output_convolution, activation_type='')
+# print("output detector:", output_detector)
+# pooling = Pooling()
+# output_pooling = pooling.apply(input_matrix=output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
+# print("output_pooling:", output_pooling)

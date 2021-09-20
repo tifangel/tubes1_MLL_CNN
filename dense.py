@@ -1,13 +1,17 @@
 import random
 import numpy as np
 import activation as actv
+from Layer import Layer
 
-class Dense():
+class Dense:
     def __init__(self, units, activation = None):
         self.units = int(units) if not isinstance(units, int) else units
         if self.units < 0:
             raise ValueError(f'Invalid value for Units, expected a positive integer. Received: units={units}')
         self.activation = actv.get('linear')
+
+        # invoking the __init__ of the parent class 
+        # Layer.__init__(self, idlayer)
 
     def build(self, input_size, weight_range = None):
         if weight_range is not None:

@@ -1,22 +1,29 @@
 import numpy as np
+from Layer import Layer
 
-class Detector:
-    def __init__(self):
-        self.input = [] 
-        self.activation_type = ''
+class Detector(Layer):
+    def __init__(self, idlayer, activfunc):
+        self.activation_type = activfunc
 
-    def activate(self, input_matrix, activation_type='sigmoid'):
-        self.input = input_matrix
+        # invoking the __init__ of the parent class 
+        Layer.__init__(self, idlayer)
+
+    def activate(self):
         result = []
         for x in self.input:
-            if activation_type == 'sigmoid':
+            # Sigmoid
+            if self.activation_type == 0:
                 result.append(list(self.sigmoid(x)))
-            elif activation_type == 'relu':
+            # Relu
+            elif self.activation_type == 1: 
                 result.append(list(self.relu(x)))
-            elif activation_type == 'softmax':
+            # Softmax
+            elif self.activation_type == 2:
                 result.append(list(self.softmax(x)))
+            # Linear
             else:
                 result.append(list(x))
+        self.output = result
         return result
     
     def sigmoid(self, X):
