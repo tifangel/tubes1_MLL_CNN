@@ -1,11 +1,11 @@
 class Layer:
     def __init__(self, idlayer):
         self.id_layer = idlayer
-        self.inputs = []
+        self.input = []
         self.output = []
     
-    def setInput(self, inputs):
-        self.inputs = inputs
+    def setInput(self, input):
+        self.input = input
     
-    def setOutput(self, outputs):
-        self.output = outputs
+    def setOutput(self, output):
+        self.output = output

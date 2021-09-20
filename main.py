@@ -115,7 +115,7 @@ class CNNClassifier:
         layers = []
         # Konvolusi Layer
         for i in range(self.n_layer_konvolusi):
-            newLayer = Convolution(i, self.kernels[i], self.size_padding, self.size_stride, self.isSharing)
+            newLayer = Convolution(i, self.kernels, self.size_padding, self.size_stride, self.isSharing)
             newLayer.printKernels()
             layers.append(newLayer)
         # Detector Layer
@@ -128,13 +128,13 @@ class CNNClassifier:
         self.layers = layers
 
     def feedFoward(self):
-        # inputLayer = self.input
-        inputLayer = [
-            [1, 1, 2, 4],
-            [5, 6, 7, 8],
-            [3, 2, 1, 0],
-            [1, 2, -3, 4]
-        ]
+        inputLayer = self.input
+        # inputLayer = [
+        #     [1, 1, 2, 4],
+        #     [5, 6, 7, 8],
+        #     [3, 2, 1, 0],
+        #     [1, 2, -3, 4]
+        # ]
         # Convolution
         for i in range(self.n_layer_konvolusi):
             self.layers[i].setInput([inputLayer])
