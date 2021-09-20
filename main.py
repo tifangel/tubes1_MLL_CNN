@@ -56,6 +56,12 @@ class CNNClassifier:
 
     def getLayer(self,idx):
         return self.layers[idx]
+
+    def getInput(self):
+        return self.input
+
+    def getKernels(self):
+        return self.kernels
     
     # Fungsi buat convert
     def convertInt(self, arr): 
@@ -196,21 +202,22 @@ CNN = CNNClassifier()
 
 CNN.load("text.txt")
 
-matrix = np.array([
-    [1, 1, 2, 4],
-    [5, 6, 7, 8],
-    [3, 2, 1, 0],
-    [1, 2, -3, 4]
-])
-kernel = np.array([
-    [
-        [1, 0],
-        [0, 1]
-    ]
-])
-print("input", matrix)
-print("kernel", kernel)
-convolution = Convolution(np.array([matrix]), kernel, 2, 2, 1)
+# matrix = np.array([
+#     [1, 1, 2, 4],
+#     [5, 6, 7, 8],
+#     [3, 2, 1, 0],
+#     [1, 2, -3, 4]
+# ])
+# kernel = np.array([
+#     [
+#         [1, 0],
+#         [0, 1]
+#     ]
+# ])
+
+# print("input", matrix)
+# print("kernel", kernel)
+convolution = Convolution([CNN.getInput()], CNN.getKernels(), 0, 100, 1)
 output_convolution = convolution.doConvolution()[0]
 print("output convolution:", output_convolution)
 detector = Detector()

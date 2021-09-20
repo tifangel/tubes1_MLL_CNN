@@ -2,8 +2,8 @@ import numpy as np
 
 class Convolution:
     def __init__(self, input, kernels, size_padding, size_stride, isSharing):
-        self.input = input.tolist()
-        self.kernels = kernels.tolist()
+        self.input = input
+        self.kernels = kernels
         self.size_padding = size_padding
         self.size_stride = size_stride
         self.isSharing = isSharing
@@ -15,6 +15,7 @@ class Convolution:
         if (isSharing == 0):
             self.f_filter = len(kernels[0][0])  
         self.feature_map = []
+        self.bias = [0 for i in range(self.n_filter)]
 
     def doConvolution(self):
         # Add padding to input
@@ -51,7 +52,7 @@ class Convolution:
                     for j in range(0, new_h, self.size_stride):
                         if j + self.f_filter >= new_h + 1:
                             continue
-                        s = 0
+                        s = self.bias[m]
                         for p in range(self.f_filter):
                             for q in range(self.f_filter):
                                 # print(i,j,p,q)
