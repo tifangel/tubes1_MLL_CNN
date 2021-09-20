@@ -7,7 +7,7 @@ class Dense():
         self.units = int(units) if not isinstance(units, int) else units
         if self.units < 0:
             raise ValueError(f'Invalid value for Units, expected a positive integer. Received: units={units}')
-        self.activation = actv.get('linear')
+        self.activation = actv.get(activation)
 
     def build(self, input_size, weight_range = None):
         if weight_range is not None:
@@ -30,10 +30,11 @@ class Dense():
             result.append(self.activation(i))
         return result
 
-dense = Dense(2)
-dense.build(3, (-3,3))
-print(dense.weight)
-dot = dense.compute_dot([[3,2,1],[1,2,3]])
-print('DOT : ', dot)
-output = dense.compute_output(dot)
-print('OUTPUT : ', output)
+# TEST
+# dense = Dense(2, 'sigmoid')
+# dense.build(3, (-3,3))
+# print(dense.weight)
+# dot = dense.compute_dot([[3,2,1],[1,2,3]])
+# print('DOT : ', dot)
+# output = dense.compute_output(dot)
+# print('OUTPUT : ', output)
