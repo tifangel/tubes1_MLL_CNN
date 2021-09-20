@@ -5,6 +5,7 @@ import math
 import csv
 import sys
 import numpy as np
+from Convolution import Convolution
 from Pooling import Pooling
 from Detector import Detector
 
@@ -201,9 +202,19 @@ matrix = np.array([
     [3, 2, 1, 0],
     [1, 2, -3, 4]
 ])
+kernel = np.array([
+    [
+        [1, 0],
+        [0, 1]
+    ]
+])
 print("input", matrix)
+print("kernel", kernel)
+convolution = Convolution(np.array([matrix]), kernel, 2, 2, 1)
+output_convolution = convolution.doConvolution()[0]
+print("output convolution:", output_convolution)
 detector = Detector()
-output_detector = detector.activate(input_matrix=matrix, activation_type='')
+output_detector = detector.activate(input_matrix=output_convolution, activation_type='')
 print("output detector:", output_detector)
 pooling = Pooling()
 output_pooling = pooling.apply(input_matrix=output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
