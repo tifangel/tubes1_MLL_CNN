@@ -9,6 +9,7 @@ from Layer import Layer
 from Convolution import Convolution
 from Pooling import Pooling
 from Detector import Detector
+from dense import Dense
 
 class CNNClassifier:
     def __init__(self):
@@ -124,6 +125,9 @@ class CNNClassifier:
         # Pooling Layer
         poolingLayer = Pooling(self.n_layer_konvolusi + 1, self.size_stride, self.size_padding, 'max')
         layers.append(poolingLayer)
+        # Dense Layer
+        denseLayer = Dense(1, 'RELU')
+        layers.append(denseLayer)
         # Set Layer to CNN
         self.layers = layers
 
@@ -147,6 +151,17 @@ class CNNClassifier:
         # Pooling
         outputLayer = self.layers[self.n_layer_konvolusi + 1].apply(inputLayer)
         print("output_pooling:", outputLayer)
+
+        input_dense = []
+        for i in range(len(outputLayer)):
+            input_dense.append(outputLayer[i])
+
+        self.layers[self.n_layer_konvolusi + 2].build(1, (-1,1))
+        print(self.layers[self.n_layer_konvolusi + 2].weight)
+        dot = self.layers[self.n_layer_konvolusi + 2].compute_dot(input_dense)
+        print('DOT : ', dot)
+        output = self.layers[self.n_layer_konvolusi + 2].compute_output(dot)
+        print('OUTPUT : ', output)
 
 CNN = CNNClassifier()
 
