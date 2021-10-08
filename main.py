@@ -51,6 +51,14 @@ class CNNClassifier:
         for i in range(len(arr)):
             numlist[i] = float(arr[i])
         return numlist
+    
+    def loadInputMNist(self, input_path, target_path):
+        # Pilih Dataset untuk input
+        X, y = loadlocal_mnist(
+            images_path=input_path, 
+            labels_path=target_path)
+        self.input = X
+        self.target = y
 
     def load(self,filename):
         f = open(filename, "r")
@@ -105,13 +113,6 @@ class CNNClassifier:
                 kernels.append(kernel)
         self.kernels = kernels
 
-        # Pilih Dataset untuk input
-        X, y = loadlocal_mnist(
-            images_path='train-images.idx3-ubyte', 
-            labels_path='train-labels.idx1-ubyte')
-        self.input = X
-        self.target = y
-
         # Inisialisasi Layer
         layers = []
         # Konvolusi Layer
@@ -130,6 +131,97 @@ class CNNClassifier:
         layers.append(denseLayer)
         # Set Layer to CNN
         self.layers = layers
+
+    def saveModel(self):
+        print("Save")
+        array = []
+        array.append(self.size_input)
+        array.append(self.n_layer)
+        array.append(self.n_layer_konvolusi)
+        array.append(self.size_padding)
+        array.append(self.size_stride)
+        array.append(self.n_filter)
+        array.append(self.size_filter)
+        array.append(self.isSharing)
+        array.append(self.kernels)
+        print(array)
+        file = open("model.txt", "w")
+        last_line = len(array) - 1
+        for i,line in enumerate(array):
+            if (not isinstance(line, list)):
+                file.write(str(line))
+            else:
+                last_num = len(line) - 1
+                for j,num in enumerate(line):
+                    if (not isinstance(num, list)):
+                        file.write(str(num))
+                        if (j != last_num):
+                            file.write(" ")
+                    else:
+                        last_elm = len(num) - 1
+                        for k, elm in enumerate(num):
+                            if (not isinstance(elm, list)):
+                                file.write(str(elm))
+                                if (k != last_elm):
+                                    file.write(" ")
+                            else:
+                                last_str = len(elm) - 1
+                                for l, elm_str in enumerate(elm):
+                                    file.write(str(elm_str))
+                                    if (l != last_str):
+                                        file.write(" ")
+                                if (k != last_elm):
+                                    file.write("\n")    
+                        if (j != last_num):
+                            file.write("\n")
+            if (i != last_line):
+                file.write("\n")
+        file.close()
+
+    def readModel(self):
+        f = open("model.txt", "r")
+        numbers = re.split('\n',f.read())
+        print(numbers)
+        # Ukuran Input
+        self.size_input = self.convertInt(re.split(' ',numbers[0]))
+        # Jumlah layer
+        self.n_layer = int(numbers[1])
+        # Jumlah Konvolusi Layer
+        self.n_layer_konvolusi = int(numbers[2])
+        # Ukuran Padding
+        self.size_padding = int(numbers[3])
+        # Ukuran Stride
+        self.size_stride = int(numbers[4])
+        # Jumlah Filter
+        self.n_filter = int(numbers[5])
+        # Ukuran filter
+        self.size_filter = self.convertInt(re.split(' ',numbers[6]))
+        # CNN Sharing Parameter or not
+        self.isSharing = int(numbers[7])
+        kernels = []
+        indexrow = 8
+        if (self.isSharing == 1):
+            for i in range(self.n_filter):
+                kernel = []
+                for j in range(self.size_filter[0]):
+                    row = []
+                    for k in range(self.size_filter[1]):
+                        row.append(random.randint(1,30))
+                    kernel.append(row)
+                kernels.append(kernel)
+        elif (self.isSharing == 0):
+            for i in range(self.n_filter):
+                kernel = []
+                for j in range(self.size_filter[2]):
+                    matriks = []
+                    for k in range(self.size_filter[0]):
+                        row = []
+                        for l in range(self.size_filter[1]):
+                            row.append(random.randint(1,30))
+                        matriks.append(row)
+                    kernel.append(matriks)
+                kernels.append(kernel)
+        self.kernels = kernels
 
     def feedFoward(self):
         inputLayer = self.input
@@ -163,11 +255,19 @@ class CNNClassifier:
         output = self.layers[self.n_layer_konvolusi + 2].compute_output(dot)
         print('OUTPUT : ', output)
 
+    def backwardProp(self):
+        print("Backward Propagation")
+
 CNN = CNNClassifier()
 
 CNN.load("text.txt")
 
-CNN.feedFoward()
+# Pilih Dataset untuk input
+CNN.loadInputMNist('train-images.idx3-ubyte', 'train-labels.idx1-ubyte')
+
+# CNN.feedFoward()
+CNN.saveModel()
+CNN.readModel()
 
 # matrix = np.array([
 #     [1, 1, 2, 4],
