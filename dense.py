@@ -73,11 +73,11 @@ class Dense:
     
 
 #TEST
-inputs = [[3,2,1]]
-target = [[0,1]]
-dense = Dense(2, 'sigmoid')
-dense.build(3, (-3,3))
-error = dense.train(inputs, target, 30, 0.5)
-output = dense.predict([[3,2,1]])
-print(output)
+# inputs = [[3,2,1]]
+# target = [[0,1]]
+# dense = Dense(2, 'sigmoid')
+# dense.build(3, (-3,3))
+# error = dense.train(inputs, target, 30, 0.5)
+# output = dense.predict([[3,2,1]])
+# print(output)
 #dense.train([[1, 0], [0, 1]], 10)
