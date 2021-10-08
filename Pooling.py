@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 from Layer import Layer
+from Detector import Detector 
 
 class Pooling(Layer):
     def __init__(self, idlayer, stride, padding, pool_mode, kernel_size):

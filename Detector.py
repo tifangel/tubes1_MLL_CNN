@@ -1,10 +1,12 @@
 import numpy as np
 from Layer import Layer
 
-class Detector:
+class Detector(Layer):
     def __init__(self, idlayer, activation_type):
         # self.input = np.array(matrix)
         self.activation_type = activation_type
+
+        self.backward_output = []
 
         # invoking the __init__ of the parent class 
         Layer.__init__(self, idlayer)
@@ -24,15 +26,17 @@ class Detector:
         self.output = result
         return result
 
-    def backward(self, inputmatrix):
+    def backward(self, inputMatrix):
         result = []
-        for rearrange in inputmatrix:
+        for rearrange in inputMatrix:
+            # print(list(rearrange))
             if self.activation_type == 0:
                 result.append(list(dSigmoid(rearrange)))
             elif self.activation_type == 1:
                 result.append(list(dRelu(rearrange)))
             else:
                 result.append(list(rearrange))
+        self.backward_output = result
         return result
     
 def sigmoid(X):

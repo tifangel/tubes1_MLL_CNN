@@ -278,14 +278,17 @@ class CNNClassifier:
         
         # for idx in range(len(self.layers)-2, -1, -1): ## Ini belum ada dense layer
         backward_pooling = self.layers[last_idx - 1].backward()
-        backward_pooling = np.array(backward_pooling).reshape(self.layers[last_idx - 1].input.shape)
+        backward_pooling = np.array(backward_pooling)
+        # Convert to 2D array
+        backward_pooling = backward_pooling.transpose()
+        backward_pooling = backward_pooling.reshape(backward_pooling.shape[0], (backward_pooling.shape[1]*backward_pooling.shape[2]))
         backward_detector = self.layers[last_idx - 2].backward(backward_pooling)
-        print(backward_detector)
-        # loss = [ [0, -1],
-        #         [1, 0] ]
-        # for idx in range(self.n_layer_konvolusi-1, -1, -1):
-        #     back_conv = BackConv(backward_detector,self.kernels,loss)
-        #     f_update, loss_grad = bc.back_conv()
+        # Backprop Convolution
+        loss = [ [0, -1],
+                [1, 0] ]
+        for idx in range(self.n_layer_konvolusi-1, -1, -1):
+            back_conv = BackConv([backward_detector],self.kernels,loss)
+            f_update, loss_grad = back_conv.back_conv()
 
 CNN = CNNClassifier()
 
