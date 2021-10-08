@@ -2,9 +2,8 @@ import numpy as np
 from numpy.lib.stride_tricks import as_strided
 from Layer import Layer
 
-class Pooling:
-    def __init__(self, matrix, kernel_size, stride=2, padding=0, pool_mode='max'):
-        self.input = matrix
+class Pooling(Layer):
+    def __init__(self, idlayer, stride, padding, pool_mode, kernel_size):
         self.kernel_size = kernel_size
         self.stride= stride
         self.padding = padding
@@ -16,8 +15,11 @@ class Pooling:
         self.forward_output = []
         self.backward_output = []
 
-    def forward(self):
-        self.input = np.pad(self.input, self.padding, mode='constant')
+        # invoking the __init__ of the parent class 
+        Layer.__init__(self, idlayer)
+
+    def forward(self, input_matrix):
+        self.input = np.pad(input_matrix, self.padding, mode='constant')
 
         output_shape = (
             (self.input.shape[0] - self.kernel_size[0] + 2*self.padding)//self.stride + 1,
@@ -90,21 +92,21 @@ matrices =[
 ]
 
 # FORWARD
-for matrix in matrices:
-    detector = Detector(matrix, 'relu')
-    output_detector = detector.forward()
-    print(detector.input)
-    print("FORWARD DETECTOR :", np.array(output_detector))
-    # pooling = Pooling(output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
-    pooling = Pooling(output_detector, kernel_size=(3,3), stride=1, padding=0, pool_mode='max')
-    forward_pooling = pooling.forward()
-    print("FORWARD POOL :", np.array(forward_pooling))
+# for matrix in matrices:
+#     detector = Detector(matrix, 'relu')
+#     output_detector = detector.forward()
+#     print(detector.input)
+#     print("FORWARD DETECTOR :", np.array(output_detector))
+#     # pooling = Pooling(output_detector, kernel_size=(2,2), stride=2, padding=0, pool_mode='max')
+#     pooling = Pooling(output_detector, kernel_size=(3,3), stride=1, padding=0, pool_mode='max')
+#     forward_pooling = pooling.forward()
+#     print("FORWARD POOL :", np.array(forward_pooling))
 
-    # BACKWARD
-    backward_pooling = pooling.backward()
-    backward_pooling = np.array(backward_pooling).reshape(pooling.input.shape)
-    print("BACKWARD POOL:", backward_pooling)
-    dDetector = Detector(backward_pooling, 'relu')
-    print("BACKWARD POOL ACTIVATION:", np.array(dDetector.backward()))
-    print("BACKWARD DETECTOR:", np.array(detector.backward()))
-    print()
+#     # BACKWARD
+#     backward_pooling = pooling.backward()
+#     backward_pooling = np.array(backward_pooling).reshape(pooling.input.shape)
+#     print("BACKWARD POOL:", backward_pooling)
+#     dDetector = Detector(backward_pooling, 'relu')
+#     print("BACKWARD POOL ACTIVATION:", np.array(dDetector.backward()))
+#     print("BACKWARD DETECTOR:", np.array(detector.backward()))
+#     print()

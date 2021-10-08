@@ -10,6 +10,7 @@ from Convolution import Convolution
 from Pooling import Pooling
 from Detector import Detector
 from dense import Dense
+from BackConv import BackConv
 
 class CNNClassifier:
     def __init__(self):
@@ -127,7 +128,7 @@ class CNNClassifier:
         detectorLayer = Detector(self.n_layer_konvolusi, int(numbers[7]))
         layers.append(detectorLayer)
         # Pooling Layer
-        poolingLayer = Pooling(self.n_layer_konvolusi + 1, self.size_stride, self.size_padding, 'max')
+        poolingLayer = Pooling(self.n_layer_konvolusi + 1, self.size_stride, self.size_padding, 'max', (3,3))
         layers.append(poolingLayer)
         # Dense Layer
         denseLayer = Dense(1, 'RELU')
@@ -254,11 +255,10 @@ class CNNClassifier:
             inputLayer = self.layers[i].doConvolution()[0]
             print("output convolution:", inputLayer)
         # Detector
-        self.layers[self.n_layer_konvolusi].setInput(inputLayer)
-        inputLayer = self.layers[self.n_layer_konvolusi].activate()
+        inputLayer = self.layers[self.n_layer_konvolusi].forward(inputLayer)
         print("output detector:", inputLayer)
         # Pooling
-        outputLayer = self.layers[self.n_layer_konvolusi + 1].apply(inputLayer)
+        outputLayer = self.layers[self.n_layer_konvolusi + 1].forward(inputLayer)
         print("output_pooling:", outputLayer)
 
         input_dense = []
@@ -272,9 +272,20 @@ class CNNClassifier:
         output = self.layers[self.n_layer_konvolusi + 2].compute_output(dot)
         print('OUTPUT : ', output)
 
-    def backwardProp(self, epoch, learning_rate, momentum):
+    def backprop(self):
         print("Backward Propagation")
-
+        last_idx = len(self.layers) - 1
+        
+        # for idx in range(len(self.layers)-2, -1, -1): ## Ini belum ada dense layer
+        backward_pooling = self.layers[last_idx - 1].backward()
+        backward_pooling = np.array(backward_pooling).reshape(self.layers[last_idx - 1].input.shape)
+        backward_detector = self.layers[last_idx - 2].backward(backward_pooling)
+        print(backward_detector)
+        # loss = [ [0, -1],
+        #         [1, 0] ]
+        # for idx in range(self.n_layer_konvolusi-1, -1, -1):
+        #     back_conv = BackConv(backward_detector,self.kernels,loss)
+        #     f_update, loss_grad = bc.back_conv()
 
 CNN = CNNClassifier()
 
@@ -283,9 +294,10 @@ CNN.load("text.txt")
 # Pilih Dataset untuk input
 CNN.loadInputMNist('train-images.idx3-ubyte', 'train-labels.idx1-ubyte')
 
-# CNN.feedFoward()
-CNN.saveModel()
-CNN.readModel()
+CNN.feedFoward()
+CNN.backprop()
+# CNN.saveModel()
+# CNN.readModel()
 
 # matrix = np.array([
 #     [1, 1, 2, 4],
