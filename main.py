@@ -25,6 +25,9 @@ class CNNClassifier:
         self.kernels = []
         self.input = []
         self.target = []
+        self.epoch = 0
+        self.learning_rate = 0
+        self.momentum = 0
     
     def setTypeCNN(self, isSharing):
         self.isSharing = isSharing
@@ -132,6 +135,10 @@ class CNNClassifier:
         # Set Layer to CNN
         self.layers = layers
 
+        self.epoch = int(numbers[9])
+        self.learning_rate = float(numbers[10])
+        self.momentum = int(numbers[11])
+
     def saveModel(self):
         print("Save")
         array = []
@@ -167,9 +174,19 @@ class CNNClassifier:
                             else:
                                 last_str = len(elm) - 1
                                 for l, elm_str in enumerate(elm):
-                                    file.write(str(elm_str))
-                                    if (l != last_str):
-                                        file.write(" ")
+                                    if (not isinstance(elm_str, list)):
+                                        file.write(str(elm_str))
+                                        if (l != last_str):
+                                            file.write(" ")
+                                    else:
+                                        last_str_elm = len(elm_str) - 1
+                                        for m, element in enumerate(elm_str):
+                                            file.write(str(element))
+                                            if (m != last_str_elm):
+                                                file.write(" ")
+                                        if (l != last_str):
+                                            file.write("\n")
+
                                 if (k != last_elm):
                                     file.write("\n")    
                         if (j != last_num):
@@ -255,8 +272,9 @@ class CNNClassifier:
         output = self.layers[self.n_layer_konvolusi + 2].compute_output(dot)
         print('OUTPUT : ', output)
 
-    def backwardProp(self):
+    def backwardProp(self, epoch, learning_rate, momentum):
         print("Backward Propagation")
+
 
 CNN = CNNClassifier()
 
